@@ -2,8 +2,7 @@ name: Deploy Ciclo de 7
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -11,31 +10,47 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: true
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar repositorio
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Preparar archivos
+      - name: Extraer aplicación
+        shell: bash
         run: |
-          rm -rf public
-          mkdir public
-          unzip -o ciclo7_pwa.zip -d public
+          set -e
 
-      - name: Configurar Pages
+          mkdir -p public
+
+          ZIP=$(find . -maxdepth 1 -type f -iname "*.zip" | head -n 1)
+
+          if [ -z "$ZIP" ]; then
+            echo "ERROR: No se encontró ningún ZIP"
+            exit 1
+          fi
+
+          echo "ZIP encontrado: $ZIP"
+
+          unzip -o "$ZIP" -d public
+
+          echo "Contenido extraído:"
+          find public -maxdepth 2 -type f
+
+          if [ ! -f "public/index.html" ]; then
+            echo "ERROR: index.html no está en la raíz del ZIP"
+            exit 1
+          fi
+
+      - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Subir sitio
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
 
-      - name: Publicar
+      - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
