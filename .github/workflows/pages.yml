@@ -1,0 +1,41 @@
+name: Deploy Ciclo de 7
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar archivos
+        run: |
+          rm -rf public
+          mkdir public
+          unzip -o ciclo7_pwa.zip -d public
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir sitio
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+      - name: Publicar
+        uses: actions/deploy-pages@v4
