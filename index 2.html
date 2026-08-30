@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ciclo de 7">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Ciclo de 7</title>
+<style>
+:root{--bg:#000;--surface:#0d0d0d;--surface2:#151515;--line:#2b2b2b;--text:#f5f5f5;--muted:#949494;--danger:#ff7272;--radius:14px;--max:760px}
+*{box-sizing:border-box}
+html{background:#000;color-scheme:dark}
+body{margin:0;background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
+button,input,textarea{font:inherit}
+button{touch-action:manipulation}
+.app{min-height:100dvh}
+header{position:sticky;top:0;z-index:20;background:rgba(0,0,0,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.nav{max-width:var(--max);margin:auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-weight:720;letter-spacing:-.02em}
+.navlinks{display:flex;gap:6px}
+.btn{min-height:44px;border:1px solid var(--line);border-radius:11px;padding:10px 13px;color:var(--text);background:#0b0b0b}
+.btn.primary{background:#fff;color:#000;border-color:#fff;font-weight:700}
+.btn.ghost{background:transparent}.btn.danger{color:var(--danger)}
+.btn.small{min-height:38px;padding:8px 10px;font-size:13px}
+main{max-width:var(--max);margin:auto;padding:24px 16px 70px}
+.screen{display:none}.screen.active{display:block}
+.kicker{font-size:12px;color:#737373;letter-spacing:.1em;text-transform:uppercase}
+h1{font-size:clamp(32px,8vw,52px);line-height:1.02;letter-spacing:-.05em;margin:10px 0}
+h2{font-size:26px;line-height:1.1;letter-spacing:-.03em;margin:8px 0}
+h3{margin:0 0 5px;font-size:17px}
+p{margin:0 0 12px;line-height:1.55}.muted{color:var(--muted)}
+.hero{padding:20px 0 12px}.actions{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:17px;margin:13px 0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+.notice{border-left:2px solid #555;padding-left:12px;color:#c9c9c9;font-size:14px}
+.progress{height:4px;background:#202020;border-radius:99px;overflow:hidden;margin:8px 0 5px}.progress span{display:block;height:100%;background:#fff}
+.progressmeta{display:flex;justify-content:space-between;font-size:12px;color:#858585}
+.stephead{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px}
+.stepnum{width:36px;height:36px;flex:0 0 auto;border:1px solid #444;border-radius:50%;display:grid;place-items:center;font-weight:700}
+.guide{background:#111;border:1px solid var(--line);border-radius:12px;padding:14px;margin:14px 0 20px;font-size:14px;color:#cfcfcf}.guide strong{display:block;color:#fff;margin-bottom:6px}.guide ul{margin:7px 0 0;padding-left:18px}.guide li{margin:4px 0}
+.field{margin:17px 0}label{display:block;font-size:14px;font-weight:650;margin-bottom:7px}
+textarea,input{width:100%;background:#070707;color:#f6f6f6;border:1px solid var(--line);border-radius:11px;padding:12px 13px;outline:none}
+textarea{min-height:150px;resize:vertical;line-height:1.5}input{min-height:44px}
+textarea:focus,input:focus{border-color:#777;box-shadow:0 0 0 3px rgba(255,255,255,.05)}
+.hint{font-size:12px;color:#6e6e6e;margin-top:6px}
+.pills{display:flex;flex-wrap:wrap;gap:7px}.pill{border:1px solid var(--line);border-radius:999px;background:#070707;color:#c3c3c3;padding:8px 11px}.pill.active{background:#fff;color:#000;border-color:#fff}
+.navrow{display:flex;justify-content:space-between;gap:8px;margin-top:20px}.navright{display:flex;gap:8px}
+.status{text-align:right;color:#6d6d6d;font-size:12px;min-height:18px;margin:8px 0}
+.record{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}.recordtitle{font-weight:680;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.recordmeta{font-size:12px;color:#737373;margin-top:3px}
+.summarygrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.summaryitem{background:#080808;border:1px solid #1f1f1f;border-radius:10px;padding:11px}.summarylabel{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:4px}.summarytext{font-size:13px;color:#ddd;white-space:pre-wrap}
+.empty{padding:42px 8px;text-align:center;color:#6f6f6f}
+dialog{width:min(92vw,560px);border:1px solid var(--line);border-radius:15px;background:#0d0d0d;color:#fff;padding:0}
+dialog::backdrop{background:rgba(0,0,0,.72)}.modal{padding:18px}.modalhead{display:flex;justify-content:space-between;gap:10px}.close{border:0;background:transparent;color:#999;font-size:24px}
+.toast{position:fixed;z-index:40;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;background:#fff;color:#000;border-radius:10px;padding:10px 13px;transition:.2s;font-size:13px;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+small{color:#6e6e6e}
+@media(max-width:480px){main{padding:18px 13px 60px}.nav{padding:10px 13px}.navlinks .btn{padding:8px}.actions .btn{flex:1}.summarygrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="nav">
+  <div class="brand">Ciclo de 7</div>
+  <div class="navlinks">
+    <button class="btn ghost small" id="homeBtn">Inicio</button>
+    <button class="btn ghost small" id="recordsBtn">Registros</button>
+  </div>
+</div></header>
+<main>
+
+<section id="home" class="screen active">
+  <div class="hero">
+    <div class="kicker">Autoobservación · Jung + Ley de Siete</div>
+    <h1>Observar antes de interpretar.</h1>
+    <p class="muted">Un diario estructurado para separar hechos, reacción, interpretación, proyección, sombra, integración y acción.</p>
+    <div class="actions">
+      <button class="btn primary" id="newBtn">Nuevo registro</button>
+      <button class="btn" id="continueBtn" style="display:none">Continuar borrador</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Regla del método</h3>
+    <p class="notice">La aplicación no pretende descubrir “la verdad” de tu psique. Las lecturas jungianas se formulan como hipótesis y se contrastan con hechos y conducta.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><h3>1–3 · Observar</h3><p class="muted">Hechos, emoción y relato.</p></div>
+    <div class="card"><h3>4–5 · Confrontar</h3><p class="muted">Proyección y parte rechazada.</p></div>
+    <div class="card"><h3>6 · Integrar</h3><p class="muted">Necesidad y expresión consciente.</p></div>
+    <div class="card"><h3>7 · Actuar</h3><p class="muted">Detectar el intervalo y comprobarlo en la realidad.</p></div>
+  </div>
+  <div class="card">
+    <h3>Guardado</h3>
+    <p class="muted">El borrador y el historial se guardan localmente en la app. Para conservar un registro como archivo, usa <b>Guardar en Archivos</b> al terminar.</p>
+  </div>
+</section>
+
+<section id="records" class="screen">
+  <div class="kicker">Historial</div><h2>Registros</h2>
+  <div class="actions">
+    <button class="btn primary" id="newBtn2">Nuevo registro</button>
+    <button class="btn" id="importBtn">Importar JSON</button>
+    <button class="btn" id="exportAllBtn">Exportar todo</button>
+    <input id="fileInput" type="file" accept=".json,application/json" hidden>
+  </div>
+  <div id="recordsList"></div>
+</section>
+
+<section id="wizard" class="screen">
+  <div class="progressmeta"><span id="phaseLabel">Fase 1 de 7</span><span id="phasePct">14%</span></div>
+  <div class="progress"><span id="phaseBar"></span></div>
+  <div class="card">
+    <div class="stephead"><div class="stepnum" id="stepNum">1</div><div><div class="kicker" id="stepKicker">ESTADO</div><h2 id="stepTitle"></h2></div></div>
+    <div class="guide" id="stepGuide"></div>
+    <div id="fields"></div>
+    <div class="status" id="status">● Guardado</div>
+    <div class="navrow">
+      <button class="btn ghost" id="exitBtn">Salir</button>
+      <div class="navright"><button class="btn" id="backBtn">Atrás</button><button class="btn primary" id="nextBtn">Siguiente</button></div>
+    </div>
+  </div>
+</section>
+
+<section id="done" class="screen">
+  <div class="kicker">Registro completo</div><h2>Ahora hay algo que comprobar.</h2>
+  <p class="muted">La reflexión termina en una hipótesis y una acción, no en una conclusión absoluta.</p>
+  <div id="doneSummary"></div>
+  <div class="actions">
+    <button class="btn primary" id="saveFileBtn">Guardar en Archivos</button>
+    <button class="btn" id="backRecordsBtn">Volver a registros</button>
+  </div>
+</section>
+</main>
+
+<dialog id="recordDialog">
+ <div class="modal"><div class="modalhead"><div><div class="kicker">Registro</div><h2 id="dialogTitle">—</h2></div><button class="close" id="closeDialog">×</button></div><div id="dialogBody"></div></div>
+</dialog>
+<div class="toast" id="toast"></div>
+<script>
+const STEPS=[
+ {k:"ESTADO",title:"¿Qué ocurrió?",guide:"Empieza por la realidad observable. No intentes explicar todavía por qué ocurrió.",bullets:["Describe la escena como si una cámara la hubiera grabado.","Incluye contexto, personas, conductas y lo que hiciste tú.","Evita etiquetas psicológicas en esta fase."],fields:[["situation","Situación","Qué pasó, dónde, quién estaba y qué hiciste tú.",true]]},
+ {k:"FRICCIÓN",title:"¿Qué se activó en ti?",guide:"Registra la reacción automática antes de justificarla.",bullets:["Nombra emoción o emociones.","Describe sensaciones corporales si las hubo.","Anota el impulso o conducta automática."],fields:[["emotion","Emoción predominante","Selecciona varias o escribe matices.",true],["reaction","Reacción automática","Qué hiciste, evitaste, pensaste o sentiste.",true]]},
+ {k:"LECTURA",title:"¿Qué historia te contaste?",guide:"Separa el hecho de la interpretación construida por tu mente.",bullets:["¿Qué significado le diste?","¿Qué estás suponiendo?","¿Qué sabes y qué estás rellenando tú?"],fields:[["interpretation","Interpretación","Qué historia o significado apareció automáticamente.",true],["certainty","Hechos vs. suposiciones","Separa lo que sabes de lo que estás infiriendo.",false]]},
+ {k:"PROYECCIÓN",title:"¿Qué estás colocando fuera?",guide:"Una proyección es una hipótesis: una cualidad propia puede experimentarse como si perteneciera exclusivamente al exterior.",bullets:["¿Qué cualidad del otro te afecta especialmente?","¿La admiras, rechazas, deseas o temes?","¿Dónde podría existir en ti?","Busca evidencia en contra también."],fields:[["projection","Hipótesis de proyección","Qué parte de tu reacción podría estar relacionada con una cualidad propia.",true],["evidence","Evidencia a favor y en contra","Qué hechos apoyan y contradicen esta hipótesis.",false]]},
+ {k:"CONFRONTACIÓN",title:"Habla con esa parte",guide:"Explora la parte rechazada sin tratarla como una entidad literal ni como algo necesariamente malo.",bullets:["¿Qué parte de ti preferirías que nadie viera?","¿Qué intenta conseguir o evitar?","¿Qué protege?","¿Qué necesidad podría haber debajo?"],fields:[["shadow","Parte rechazada / Sombra","Describe el aspecto de ti que aparece en este conflicto.",true],["dialogue","Diálogo","Breve diálogo entre yo consciente y esa parte.",false]]},
+ {k:"INTEGRACIÓN",title:"¿Qué energía útil contiene?",guide:"Integrar no significa obedecer el impulso. Significa reconocer la energía y encontrar una forma consciente de expresarla.",bullets:["¿Qué necesidad legítima hay detrás?","¿Qué función útil puede tener?","¿Cómo expresarla sin actuar impulsivamente?"],fields:[["need","Necesidad o energía","Ej.: límite, autonomía, reconocimiento, pertenencia, deseo, descanso.",true],["integration","Integración consciente","Cómo expresar esa energía de una manera elegida.",true]]},
+ {k:"ACCIÓN",title:"¿Qué cambia en la realidad?",guide:"Este es el punto de comprobación. Identifica el intervalo y define una conducta pequeña y verificable.",bullets:["¿En qué momento se desvió o bloqueó el proceso?","¿Qué impulso consciente podría haber cambiado la trayectoria?","Define una acción observable.","Después puedes volver al registro y comprobar el resultado."],fields:[["action","Acción concreta","Qué harás o evitarás hacer; algo observable.",true],["interval","Dónde apareció el intervalo","En qué momento se rompió el proceso automático.",false],["lesson","Cierre","Qué has aprendido que quieras comprobar en la realidad.",false]]}
+];
+
+const EMOTIONS=["rabia","miedo","vergüenza","tristeza","deseo","envidia","culpa","alegría","ansiedad","confusión","frustración","soledad","alivio","inseguridad","resentimiento"];
+const DB_NAME="ciclo7-db-v1",STORE="records";
+let db=null, current=null;
+
+const $=id=>document.getElementById(id);
+function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function fmt(iso){return new Date(iso).toLocaleString("es-ES",{dateStyle:"medium",timeStyle:"short"})}
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove("show"),1800)}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");scrollTo({top:0,behavior:"smooth"});if(id==="records")renderRecords()}
+function fresh(){return{id:crypto.randomUUID(),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),data:{},step:0}}
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains(STORE)){r.result.createObjectStore(STORE,{keyPath:"id"})}};r.onsuccess=()=>{db=r.result;res(db)};r.onerror=()=>rej(r.error)})}
+function tx(mode){return db.transaction(STORE,mode).objectStore(STORE)}
+function dbPut(rec){return new Promise((res,rej)=>{const r=tx("readwrite").put(rec);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+function dbGetAll(){return new Promise((res,rej)=>{const r=tx("readonly").getAll();r.onsuccess=()=>res(r.result.sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt)));r.onerror=()=>rej(r.error)})}
+function dbGet(id){return new Promise((res,rej)=>{const r=tx("readonly").get(id);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function dbDelete(id){return new Promise((res,rej)=>{const r=tx("readwrite").delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+const DRAFT_KEY="ciclo7-active-v1";
+function saveDraftLocal(){localStorage.setItem(DRAFT_KEY,JSON.stringify(current))}
+function loadDraftLocal(){try{return JSON.parse(localStorage.getItem(DRAFT_KEY)||"null")}catch{return null}}
+function clearDraft(){localStorage.removeItem(DRAFT_KEY)}
+function updateStatus(t="● Guardado"){ $("status").textContent=t }
+
+function newRecord(){current=fresh();saveDraftLocal();renderStep();show("wizard")}
+function renderStep(){
+ const s=STEPS[current.step],i=current.step,p=Math.round((i+1)/7*100);
+ $("stepNum").textContent=i+1;$("stepKicker").textContent=s.k;$("stepTitle").textContent=s.title;$("phaseLabel").textContent=`Fase ${i+1} de 7`;$("phasePct").textContent=p+"%";$("phaseBar").style.width=p+"%";
+ $("stepGuide").innerHTML=`<strong>Cómo trabajar esta fase</strong>${esc(s.guide)}<ul>${s.bullets.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+ $("fields").innerHTML=s.fields.map(([k,l,h,req])=>{
+   if(k==="emotion"){const sel=(current.data.emotion||"").split(", ").filter(Boolean);return `<div class="field"><label>${esc(l)} ${req?"":"(opcional)"}</label><div class="pills">${EMOTIONS.map(e=>`<button class="pill ${sel.includes(e)?"active":""}" type="button" data-e="${e}">${e}</button>`).join("")}</div><textarea id="extraEmotion" style="min-height:88px;margin-top:9px" placeholder="Matices u otras emociones...">${esc(sel.filter(e=>!EMOTIONS.includes(e)).join(", "))}</textarea></div>`}
+   return `<div class="field"><label for="f_${k}">${esc(l)} ${req?"":"(opcional)"}</label><textarea id="f_${k}" placeholder="${esc(h)}">${esc(current.data[k]||"")}</textarea><div class="hint">${esc(h)}</div></div>`
+ }).join("");
+ document.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{const arr=(current.data.emotion||"").split(", ").filter(Boolean),v=b.dataset.e,n=arr.indexOf(v);n>=0?arr.splice(n,1):arr.push(v);current.data.emotion=[...new Set(arr)].join(", ");b.classList.toggle("active");saveDraftLocal()});
+ document.querySelectorAll("textarea").forEach(el=>el.addEventListener("input",()=>{collect(false);updateStatus("● Guardando…");clearTimeout(window.st);window.st=setTimeout(()=>{saveDraftLocal();updateStatus()},220)}));
+ $("backBtn").disabled=i===0;$("nextBtn").textContent=i===6?"Finalizar registro":"Siguiente";updateStatus()
+}
+function collect(withExtra=true){
+ STEPS[current.step].fields.forEach(([k])=>{if(k==="emotion")return;const el=$("f_"+k);if(el)current.data[k]=el.value});
+ if(withExtra&&$("extraEmotion")){const base=(current.data.emotion||"").split(", ").filter(Boolean).filter(e=>EMOTIONS.includes(e));const extra=$("extraEmotion").value.split(",").map(x=>x.trim()).filter(Boolean);current.data.emotion=[...new Set([...base,...extra])].join(", ")}
+ current.updatedAt=new Date().toISOString();saveDraftLocal()
+}
+async function finish(){collect(true);const rec={...JSON.parse(JSON.stringify(current))};delete rec.step;await dbPut(rec);clearDraft();current=rec;renderDone();show("done");}
+function renderDone(){
+ const d=current.data;
+ $("doneSummary").innerHTML=`<div class="summarygrid">${[
+ ["Situación",d.situation],["Emoción",d.emotion],["Interpretación",d.interpretation],["Proyección",d.projection],["Sombra",d.shadow],["Necesidad",d.need],["Integración",d.integration],["Intervalo",d.interval],["Acción",d.action],["Cierre",d.lesson]
+ ].filter(x=>x[1]).map(x=>`<div class="summaryitem"><div class="summarylabel">${esc(x[0])}</div><div class="summarytext">${esc(x[1])}</div></div>`).join("")}</div>`
+}
+async function renderRecords(){const list=await dbGetAll();const el=$("recordsList");if(!list.length){el.innerHTML='<div class="empty">No hay registros todavía.</div>';return}el.innerHTML=list.map(r=>`<div class="card"><div class="record"><div><div class="recordtitle">${esc(r.data.situation||"Registro sin título")}</div><div class="recordmeta">${fmt(r.updatedAt)}</div></div><div style="display:flex;gap:6px"><button class="btn small" data-open="${r.id}">Abrir</button><button class="btn small danger" data-del="${r.id}">Borrar</button></div></div><div class="actions" style="margin:11px 0 0"><button class="btn small" data-file="${r.id}">Guardar en Archivos</button></div><details><summary>Ver síntesis</summary><div class="summarygrid">${[["Emoción",r.data.emotion],["Proyección",r.data.projection],["Sombra",r.data.shadow],["Integración",r.data.integration],["Acción",r.data.action]].filter(x=>x[1]).map(x=>`<div class="summaryitem"><div class="summarylabel">${esc(x[0])}</div><div class="summarytext">${esc(x[1])}</div></div>`).join("")}</div></details></div>`).join("");
+ document.querySelectorAll("[data-open]").forEach(b=>b.onclick=async()=>{current={...(await dbGet(b.dataset.open)),step:0};saveDraftLocal();renderStep();show("wizard")});
+ document.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{if(confirm("¿Borrar este registro?")){await dbDelete(b.dataset.del);renderRecords()}});
+ document.querySelectorAll("[data-file]").forEach(b=>b.onclick=async()=>{const r=await dbGet(b.dataset.file);await shareRecord(r)});
+}
+function recordPayload(r){return{app:"Ciclo de 7",version:1,id:r.id,createdAt:r.createdAt,updatedAt:r.updatedAt,registro:r.data}}
+function filename(r){const base=(r.data.situation||"registro").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-zA-Z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,45)||"registro";return`ciclo7-${new Date(r.createdAt).toISOString().slice(0,10)}-${base}.json`}
+async function shareRecord(r){
+ const text=JSON.stringify(recordPayload(r),null,2),file=new File([text],filename(r),{type:"application/json"});
+ try{
+   if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:"Ciclo de 7",files:[file]});toast("Archivo enviado al menú Compartir")}
+   else {downloadBlob(text,file.name);toast("Archivo descargado")}
+ }catch(e){if(e.name!=="AbortError")downloadBlob(text,file.name)}
+}
+function downloadBlob(text,name){const a=document.createElement("a"),u=URL.createObjectURL(new Blob([text],{type:"application/json"}));a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+async function exportAll(){const all=await dbGetAll(),payload={app:"Ciclo de 7",version:1,exportedAt:new Date().toISOString(),records:all.map(recordPayload)};downloadBlob(JSON.stringify(payload,null,2),`ciclo7-backup-${new Date().toISOString().slice(0,10)}.json`);toast("Copia completa exportada")}
+$("newBtn").onclick=newRecord;$("newBtn2").onclick=newRecord;
+$("homeBtn").onclick=()=>show("home");$("recordsBtn").onclick=()=>show("records");
+$("continueBtn").onclick=()=>{current=loadDraftLocal();renderStep();show("wizard")};
+$("exitBtn").onclick=()=>{collect(true);show("home")};
+$("backBtn").onclick=()=>{collect(true);if(current.step>0){current.step--;renderStep()}};
+$("nextBtn").onclick=()=>{collect(true);const req=STEPS[current.step].fields.filter(f=>f[3]).map(f=>f[0]);if(req.some(k=>!(current.data[k]||"").trim())){toast("Completa el campo principal");return}if(current.step<6){current.step++;renderStep()}else finish()};
+$("backRecordsBtn").onclick=()=>show("records");$("saveFileBtn").onclick=()=>shareRecord(current);
+$("exportAllBtn").onclick=exportAll;$("importBtn").onclick=()=>$("fileInput").click();
+$("fileInput").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=async()=>{try{const obj=JSON.parse(rd.result),arr=Array.isArray(obj)?obj:obj.records;if(!Array.isArray(arr))throw Error();for(const x of arr){if(x.registro)await dbPut({id:x.id||crypto.randomUUID(),createdAt:x.createdAt||new Date().toISOString(),updatedAt:x.updatedAt||new Date().toISOString(),data:x.registro})}toast("Registros importados");renderRecords()}catch{alert("El archivo no parece un respaldo válido de Ciclo de 7.")}};rd.readAsText(f);e.target.value=""};
+$("closeDialog").onclick=()=>$("recordDialog").close();
+
+(async()=>{
+ try{
+  await openDB();
+  const draft=loadDraftLocal();
+  if(draft&&Object.keys(draft.data||{}).length){$("continueBtn").style.display="inline-block"}
+  if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
+ }catch(err){console.error(err);toast("No se pudo iniciar el almacenamiento local")}
+})();
+</script>
+</div>
+</body></html>
